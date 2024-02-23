@@ -47,9 +47,8 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
     const [row, col] = location
     if (row < 0 || row >= map.length || col < 0 || col >= map[row].length) {
       return true
-    } else {
-      return false
     }
+    return false
   }
 
   const getCharAtLocation = (): string => {
@@ -102,13 +101,13 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
       }
     }
     if (!foundEnd) {
+      /* Checking if end position exists*/
       throw new Error('End position not found')
     }
     if (foundStart) {
       return
-    } else {
-      throw new Error('Start position not found')
     }
+    throw new Error('Start position not found')
   })()
 
   const advance = () => {

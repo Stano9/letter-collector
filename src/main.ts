@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x', ' ', ' '],
   ]
   try {
-    const result = collectLetters(map)
+    const result = collectLetters(map2)
     res.send(result)
   } catch (error) {
     console.log(error)
