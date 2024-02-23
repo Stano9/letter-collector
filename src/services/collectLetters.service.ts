@@ -110,7 +110,7 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
     throw new Error('Start position not found')
   })()
 
-  const advance = () => {
+  const nextMove = () => {
     const char = getCharAtLocation()
     path.push(char)
     if (isLetter(char)) {
@@ -129,7 +129,7 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
 
   while (getCharAtLocation() !== 'x') {
     try {
-      advance()
+      nextMove()
     } catch (error) {
       throw new Error(error.message)
     }
