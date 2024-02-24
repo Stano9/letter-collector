@@ -82,7 +82,7 @@ export const collectLetters = (input: string[][]): { letters: string; path: stri
       left: col - 1 >= 0 && currentDirection !== 'right' ? map[row][col - 1] : null,
       up: row - 1 >= 0 && currentDirection !== 'down' ? map[row - 1][col] : null,
     }
-    const priorityTurns: Direction[] = [...currentDirection, ...Object.keys(turns)] as Direction[]
+    const priorityTurns: Direction[] = [currentDirection, ...Object.keys(turns)] as Direction[]
     for (const i in priorityTurns) {
       const turn = turns[priorityTurns[i]]
       if (isValidTurn(turn, priorityTurns[i])) {
@@ -94,26 +94,32 @@ export const collectLetters = (input: string[][]): { letters: string; path: stri
 
   ;((): void => {
     /* Find the Starting position */
-    let foundStart: boolean,
-      foundEnd = false
+    let starts = 0
+    let ends = 0
     for (let row = 0; row < map.length; row++) {
       for (let col = 0; col < map[row].length; col++) {
         if (map[row][col] === '@') {
           currentLocation = [row, col]
-          foundStart = true
+          starts++
         }
         if (map[row][col] === 'x') {
-          foundEnd = true
+          ends++
         }
       }
     }
-    if (!foundEnd) {
-      throw new Error('End position not found')
+    if (!ends) {
+      throw new Error('Missing end character')
     }
-    if (foundStart) {
+    if (ends > 1) {
+      throw new Error('Fork in path')
+    }
+    if (starts > 1) {
+      throw new Error('Multiple starts')
+    }
+    if (starts === 1) {
       return
     }
-    throw new Error('Start position not found')
+    throw new Error('Missing start character')
   })()
 
   const advance = () => {

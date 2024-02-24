@@ -4,4 +4,5 @@
 ## Start the app
 1. npm install
 2. To start the development server run `npx nx serve solution`.
+3. To run the tests run `npx nx run e2e:e2e`.
 

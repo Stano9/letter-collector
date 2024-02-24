@@ -9,10 +9,10 @@ const app = express()
 
 app.get('/', (req, res) => {
   try {
-    const result = collectLetters(GOONIES)
+    const result = collectLetters(BLAH)
     res.send(result)
   } catch (error) {
-    res.status(500).send({ message: error.message })
+    res.status(500).send(error.message)
   }
 })
 
