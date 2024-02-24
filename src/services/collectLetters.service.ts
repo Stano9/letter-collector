@@ -83,7 +83,6 @@ export const collectLetters = (input: string[][]): { letters: string; path: stri
       up: row - 1 >= 0 && currentDirection !== 'down' ? map[row - 1][col] : null,
     }
     const priorityTurns: Direction[] = [...currentDirection, ...Object.keys(turns)] as Direction[]
-    // let res = null
     for (const i in priorityTurns) {
       const turn = turns[priorityTurns[i]]
       if (isValidTurn(turn, priorityTurns[i])) {
