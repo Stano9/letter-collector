@@ -8,19 +8,24 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
   let currentLocation: [number, number] = [0, 0]
   let currentDirection: Direction = 'right'
 
+  // Array map to track collected
+  const collected: boolean[][] = new Array(map.length)
+    .fill(false)
+    .map(() => new Array(map[0].length).fill(false))
+
   const move = (direction: Direction) => {
     switch (direction) {
-      case 'up':
-        currentLocation[0]--
-        break
       case 'down':
         currentLocation[0]++
+        break
+      case 'right':
+        currentLocation[1]++
         break
       case 'left':
         currentLocation[1]--
         break
-      case 'right':
-        currentLocation[1]++
+      case 'up':
+        currentLocation[0]--
         break
     }
   }
@@ -29,9 +34,9 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
   }
 
   const isValidTurn = (char: string) => {
-    // Char is not visited and char is not starting point
+    // Valid Turn
     return (
-      (/^[A-Z]$/.test(char) && char !== '@') ||
+      (/^[A-Z]$/.test(char) && char !== '@' && char != ' ') ||
       char == '|' ||
       char == '+' ||
       char == '-' ||
@@ -59,28 +64,28 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
     return map[row][col]
   }
 
-  const markVisited = () => {
-    const [row, col] = currentLocation
-    map[row][col] = isLetter(map[row][col]) ? map[row][col].toLowerCase() : ' '
+  const markCollected = (row, col) => {
+    // If Letter mark collected else clear path
+    isLetter(map[row][col]) ? (collected[row][col] = true) : (map[row][col] = ' ')
   }
   const intersectionTurn = (): Direction => {
     const [row, col] = currentLocation
+    const cameFrom = currentDirection
 
-    const up = row - 1 >= 0 ? map[row - 1][col] : null
-    const down = row + 1 < map.length ? map[row + 1][col] : null
-    const left = col - 1 >= 0 ? map[row][col - 1] : null
-    const right = col + 1 < map[row].length ? map[row][col + 1] : null
-    if (isValidTurn(up)) {
-      return (currentDirection = 'up')
-    } else if (isValidTurn(down)) {
-      return (currentDirection = 'down')
-    } else if (isValidTurn(left)) {
-      return (currentDirection = 'left')
-    } else if (isValidTurn(right)) {
+    const up = row - 1 >= 0 && cameFrom !== 'down' ? map[row - 1][col] : null
+    const down = row + 1 < map.length && cameFrom !== 'up' ? map[row + 1][col] : null
+    const left = col - 1 >= 0 && cameFrom !== 'right' ? map[row][col - 1] : null
+    const right = col + 1 < map[row].length && cameFrom !== 'left' ? map[row][col + 1] : null
+
+    if (isValidTurn(right) && right !== '|') {
       return (currentDirection = 'right')
+    } else if (isValidTurn(up) && up !== '-') {
+      return (currentDirection = 'up')
+    } else if (isValidTurn(down) && down !== '-') {
+      return (currentDirection = 'down')
+    } else if (isValidTurn(left) && left !== '|') {
+      return (currentDirection = 'left')
     } else {
-      console.log(up)
-      console.log(letters)
       throw new Error('Invalid Intersection')
     }
   }
@@ -101,7 +106,6 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
       }
     }
     if (!foundEnd) {
-      /* Checking if end position exists*/
       throw new Error('End position not found')
     }
     if (foundStart) {
@@ -112,14 +116,15 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
 
   const advance = () => {
     const char = getCharAtLocation()
+    const [row, col] = currentLocation
     path.push(char)
-    if (isLetter(char)) {
+    if (isLetter(char) && !collected[row][col]) {
       letters.push(char)
     }
     if (isEnd(char)) {
       return
     }
-    markVisited()
+    markCollected(row, col)
     if (isIntersection(char)) {
       move(intersectionTurn())
     } else {
