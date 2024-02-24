@@ -3,7 +3,6 @@ import { GOONIES } from 'src/helpers/maps'
 describe('Goonies Map', () => {
   it('It should return GOONIES', async () => {
     const result = collectLetters(GOONIES)
-    console.log(result)
-    expect(result).toEqual({ letters: 'GOONIES', path: '@GO||+-O-N+|I|+-+|+-i+|ES|x' })
+    expect(result).toEqual({ letters: 'GOONIES', path: '@-G-O-+|+-+|O||+-O-N-+|I|+-+|+-I-+|ES|x' })
   })
 })

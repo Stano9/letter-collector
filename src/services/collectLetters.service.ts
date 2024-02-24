@@ -3,6 +3,7 @@ import { isLetter } from '../helpers'
 type Direction = 'up' | 'down' | 'left' | 'right'
 
 export const collectLetters = (map: string[][]): { letters: string; path: string } => {
+  console.log(map)
   const letters: string[] = []
   const path: string[] = []
   let currentLocation: [number, number] = [0, 0]
@@ -33,8 +34,11 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
     return char === '+' || /^[A-Z]$/.test(char)
   }
 
-  const isValidTurn = (char: string) => {
+  const isValidTurn = (char: string, direction: Direction) => {
     // Valid Turn
+    if ((direction === 'right' || direction == 'left') && char === '|') return false
+    if ((direction === 'up' || direction == 'down') && char === '-') return false
+
     return (
       (/^[A-Z]$/.test(char) && char !== '@' && char != ' ') ||
       char == '|' ||
@@ -59,6 +63,9 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
   const getCharAtLocation = (): string => {
     const [row, col] = currentLocation
     if (isOutOfBounds(currentLocation)) {
+      console.log(currentLocation)
+      console.log(letters)
+      console.log(path.join(''))
       throw new Error('Out of bounds')
     }
     return map[row][col]
@@ -68,23 +75,25 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
     // If Letter mark collected else clear path
     isLetter(map[row][col]) ? (collected[row][col] = true) : (map[row][col] = ' ')
   }
+
   const intersectionTurn = (): Direction => {
     const [row, col] = currentLocation
-    const cameFrom = currentDirection
-
-    const up = row - 1 >= 0 && cameFrom !== 'down' ? map[row - 1][col] : null
-    const down = row + 1 < map.length && cameFrom !== 'up' ? map[row + 1][col] : null
-    const left = col - 1 >= 0 && cameFrom !== 'right' ? map[row][col - 1] : null
-    const right = col + 1 < map[row].length && cameFrom !== 'left' ? map[row][col + 1] : null
-
-    if (isValidTurn(right) && right !== '|') {
+    const turns = {
+      up: row - 1 >= 0 && currentDirection !== 'down' ? map[row - 1][col] : null,
+      down: row + 1 < map.length && currentDirection !== 'up' ? map[row + 1][col] : null,
+      left: col - 1 >= 0 && currentDirection !== 'right' ? map[row][col - 1] : null,
+      right: col + 1 < map[row].length && currentDirection !== 'left' ? map[row][col + 1] : null,
+    }
+    if (isValidTurn(turns[currentDirection], currentDirection)) {
+      return currentDirection
+    } else if (isValidTurn(turns.right, 'right')) {
       return (currentDirection = 'right')
-    } else if (isValidTurn(up) && up !== '-') {
-      return (currentDirection = 'up')
-    } else if (isValidTurn(down) && down !== '-') {
+    } else if (isValidTurn(turns.down, 'down')) {
       return (currentDirection = 'down')
-    } else if (isValidTurn(left) && left !== '|') {
+    } else if (isValidTurn(turns.left, 'left')) {
       return (currentDirection = 'left')
+    } else if (isValidTurn(turns.up, 'up')) {
+      return (currentDirection = 'up')
     } else {
       throw new Error('Invalid Intersection')
     }
