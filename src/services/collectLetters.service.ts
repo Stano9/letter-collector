@@ -2,7 +2,9 @@ import { isLetter } from '../helpers'
 
 type Direction = 'up' | 'down' | 'left' | 'right'
 
-export const collectLetters = (map: string[][]): { letters: string; path: string } => {
+export const collectLetters = (input: string[][]): { letters: string; path: string } => {
+  // Clone to manipulate
+  const map = structuredClone(input)
   const letters: string[] = []
   const path: string[] = []
   let currentLocation: [number, number] = [0, 0]
@@ -75,24 +77,20 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
   const intersectionTurn = (): Direction => {
     const [row, col] = currentLocation
     const turns = {
-      up: row - 1 >= 0 && currentDirection !== 'down' ? map[row - 1][col] : null,
+      right: col + 1 < map[row].length && currentDirection !== 'left' ? map[row][col + 1] : null,
       down: row + 1 < map.length && currentDirection !== 'up' ? map[row + 1][col] : null,
       left: col - 1 >= 0 && currentDirection !== 'right' ? map[row][col - 1] : null,
-      right: col + 1 < map[row].length && currentDirection !== 'left' ? map[row][col + 1] : null,
+      up: row - 1 >= 0 && currentDirection !== 'down' ? map[row - 1][col] : null,
     }
-    if (isValidTurn(turns[currentDirection], currentDirection)) {
-      return currentDirection
-    } else if (isValidTurn(turns.right, 'right')) {
-      return (currentDirection = 'right')
-    } else if (isValidTurn(turns.down, 'down')) {
-      return (currentDirection = 'down')
-    } else if (isValidTurn(turns.left, 'left')) {
-      return (currentDirection = 'left')
-    } else if (isValidTurn(turns.up, 'up')) {
-      return (currentDirection = 'up')
-    } else {
-      throw new Error('Invalid Intersection')
+    const priorityTurns: Direction[] = [...currentDirection, ...Object.keys(turns)] as Direction[]
+    // let res = null
+    for (const i in priorityTurns) {
+      const turn = turns[priorityTurns[i]]
+      if (isValidTurn(turn, priorityTurns[i])) {
+        return (currentDirection = priorityTurns[i])
+      }
     }
+    throw new Error('Invalid Intersection')
   }
 
   ;((): void => {
@@ -116,6 +114,7 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
     if (foundStart) {
       return
     }
+    console.log(map)
     throw new Error('Start position not found')
   })()
 
