@@ -3,7 +3,6 @@ import { isLetter } from '../helpers'
 type Direction = 'up' | 'down' | 'left' | 'right'
 
 export const collectLetters = (map: string[][]): { letters: string; path: string } => {
-  console.log(map)
   const letters: string[] = []
   const path: string[] = []
   let currentLocation: [number, number] = [0, 0]
@@ -63,9 +62,6 @@ export const collectLetters = (map: string[][]): { letters: string; path: string
   const getCharAtLocation = (): string => {
     const [row, col] = currentLocation
     if (isOutOfBounds(currentLocation)) {
-      console.log(currentLocation)
-      console.log(letters)
-      console.log(path.join(''))
       throw new Error('Out of bounds')
     }
     return map[row][col]
