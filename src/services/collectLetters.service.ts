@@ -114,7 +114,6 @@ export const collectLetters = (input: string[][]): { letters: string; path: stri
     if (foundStart) {
       return
     }
-    console.log(map)
     throw new Error('Start position not found')
   })()
 
